@@ -97,6 +97,7 @@ import { get } from "svelte/store";
 import { contactPageStore } from "../../Stores/MenuStore";
 import { GameMapProperties } from "./GameMapProperties";
 import SpriteSheetFile = Phaser.Loader.FileTypes.SpriteSheetFile;
+import { videoManager } from "../../WebRtc/VideoManager";
 
 export interface GameSceneInitInterface {
     initPosition: PointInterface | null;
@@ -842,6 +843,19 @@ export class GameScene extends DirtyScene {
         }
     }
 
+    private playVideo(url: string | number | boolean | undefined, loop = false): void {
+        if (url === undefined) {
+            videoManager.unloadVideo();
+        } else {
+            const realVideoPath = "" + url;
+            videoManager.loadVideo(realVideoPath);
+
+            if (loop) {
+                videoManager.loop();
+            }
+        }
+    }
+
     private triggerOnMapLayerPropertyChange() {
         this.gameMap.onPropertyChange(GameMapProperties.EXIT_SCENE_URL, (newValue, oldValue) => {
             if (newValue) {
@@ -923,6 +937,14 @@ export class GameScene extends DirtyScene {
                 ? audioManagerFileStore.unloadAudio()
                 : audioManagerFileStore.playAudio(newValue, this.getMapDirUrl(), undefined, true);
             audioManagerVisibilityStore.set(!(newValue === undefined));
+        });
+
+        this.gameMap.onPropertyChange("playVideo", (newValue, oldValue) => {
+            this.playVideo(newValue);
+        });
+
+        this.gameMap.onPropertyChange("playVideoLoop", (newValue, oldValue) => {
+            this.playVideo(newValue, true);
         });
 
         // TODO: Legacy functionnality replace by layer change
