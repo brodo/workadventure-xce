@@ -216,5 +216,15 @@
     &-aside-holder {
       cursor: ew-resize;
     }
+
+    .top-right-btn{
+      left: -6px;
+      &#cowebsite-close {
+        bottom: 0px;
+      }
+      &#cowebsite-fullscreen {
+        bottom: 25px;
+      }
+    }
   }
 }
